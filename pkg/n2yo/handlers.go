@@ -38,7 +38,7 @@ func (c *issVisualPassHandler) RegisterDiscordHandler() interface{} {
 			}
 			var mess string
 			for _, m := range r.Passes {
-				mess = fmt.Sprintf("%s%s - %s z kierunku od %d do %d\n", mess, startDateFromUnix(m.StartUTC), endDateFromUnix(m.EndUTC), int(m.StartAz), int(m.EndAz))
+				mess = fmt.Sprintf("%s%s - %s z kierunku od %s do %s\n", mess, startDateFromUnix(m.StartUTC), endDateFromUnix(m.EndUTC), m.StartAzCompass, m.EndAzCompass)
 
 			}
 			ans := &discordgo.MessageEmbed{
