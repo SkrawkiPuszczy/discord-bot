@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/skrawkipuszczy/discord-bot/pkg/geolocation"
 )
 
 const issVisualPassHandlerTxt = "iss pass"
@@ -31,15 +30,11 @@ func (c *issVisualPassHandler) RegisterDiscordHandler() interface{} {
 		if m.Author.ID == s.State.User.ID {
 			return
 		}
-		if strings.HasPrefix(m.Content, c.GetCommand()) {
+		if strings.HasPrefix(strings.ToUpper(m.Content), strings.ToUpper(c.GetCommand())) {
 			place := after(m.Content, c.GetCommand())
-			location, err := geolocation.GetLocation(place)
+			r, err := c.nc.GetISSPass(place)
 			if err != nil {
-				s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("cos poszlo zle %s", err))
-			}
-			r, err := c.nc.GetISSPass(location)
-			if err != nil {
-				s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("cos poszlo zle %s", err))
+				s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("cos poszlo zle z ny2o  %s", err))
 			}
 			var mess string
 			for _, m := range r.Passes {
@@ -57,7 +52,6 @@ func (c *issVisualPassHandler) RegisterDiscordHandler() interface{} {
 }
 
 func after(value string, a string) string {
-	// Get substring after a string.
 	pos := strings.LastIndex(value, a)
 	if pos == -1 {
 		return ""

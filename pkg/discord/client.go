@@ -6,6 +6,13 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+type MessageType int
+
+const (
+	SimpleMessage MessageType = iota
+	MessageEmbed
+)
+
 type DiscordHandler interface {
 	RegisterDiscordHandler() interface{}
 	GetCommand() string
@@ -39,8 +46,10 @@ func (d *discordClient) Run() error {
 }
 
 func (d *discordClient) Close() error {
+	log.Println("discord client closed")
 	return d.s.Close()
 }
+
 func (d *discordClient) RegisterHandlers(handlers ...DiscordHandler) {
 	for _, c := range handlers {
 		d.handlers = append(d.handlers, c)
@@ -48,4 +57,13 @@ func (d *discordClient) RegisterHandlers(handlers ...DiscordHandler) {
 }
 func (d *discordClient) GetHandlers() *[]DiscordHandler {
 	return &d.handlers
+}
+func (d *discordClient) GetSession() *discordgo.Session {
+	return d.s
+}
+
+func (d *discordClient) SendMessage(channelID string, message *discordgo.MessageSend) {
+	c, _ := d.s.Channel(channelID)
+	log.Printf("send scheduled message to channel: %s \n", c.Name)
+	d.s.ChannelMessageSend(channelID, message.Content)
 }

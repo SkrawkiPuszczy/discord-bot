@@ -11,4 +11,8 @@ BOT_INSTAGRAM_PASSWORD
 BOT_INSTAGRAM_PASSWORD
 BOT_N2YO_ENABLED - true or false to switch ny2o bot features
 BOT_N2YO_API_KEY
+BOT_CACHE_TYPE - memory or redis (default memory)
+BOT_REDIS_URL - required if BOT_CACHE_TPE=redis
+BOT_SCHEDULED_MESSAGES_ENABLED  - true or false to switch sending scheduled messages
+BOT_SCHEDULED_CONFIG_FILE_URL=config.yaml
 ```

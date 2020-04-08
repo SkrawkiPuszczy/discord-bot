@@ -3,15 +3,16 @@ package n2yo
 import (
 	"fmt"
 
-	"github.com/codingsince1985/geo-golang"
 	"github.com/go-resty/resty/v2"
+	"github.com/skrawkipuszczy/discord-bot/pkg/geolocation"
 )
 
 const baseURI = "https://www.n2yo.com/rest/v1/satellite"
 
 type N2yoClient struct {
-	apiC *resty.Client
-	key  string
+	apiC      *resty.Client
+	geoClient geolocation.LocationReader
+	key       string
 }
 type VisualPass struct {
 	Info struct {
@@ -38,7 +39,7 @@ type Pass struct {
 	Duration       int
 }
 
-func New(apiKey string) *N2yoClient {
+func New(geoDecoder geolocation.LocationReader, apiKey string) *N2yoClient {
 	client := resty.New()
 	client.SetHostURL(baseURI)
 	client.SetHeaders(map[string]string{
@@ -47,18 +48,14 @@ func New(apiKey string) *N2yoClient {
 		"User-Agent":   "Wyborowy bot",
 	})
 	client.SetQueryParam("apiKey", apiKey)
-	return &N2yoClient{apiC: client, key: apiKey}
+	return &N2yoClient{apiC: client, key: apiKey, geoClient: geoDecoder}
 }
 
-func (c *N2yoClient) GetSatelitePosition(code string) error {
-	r, err := c.apiC.R().Get(fmt.Sprintf("/tle/%s", code))
+func (c *N2yoClient) GetISSPass(name string) (*VisualPass, error) {
+	loc, err := c.geoClient.GetLocation(name)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	fmt.Println(r)
-	return nil
-}
-func (c *N2yoClient) GetISSPass(loc *geo.Location) (*VisualPass, error) {
 	r, err := c.apiC.R().SetResult(&VisualPass{}).Get(fmt.Sprintf("/visualpasses/25544/%f/%f/250/7/180", loc.Lat, loc.Lng))
 	if err != nil {
 		return nil, err

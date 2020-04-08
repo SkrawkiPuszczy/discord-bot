@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -26,7 +27,7 @@ func (c *helpHandler) RegisterDiscordHandler() interface{} {
 		if m.Author.ID == s.State.User.ID {
 			return
 		}
-		if m.Content == c.GetCommand() {
+		if strings.ToUpper(m.Content) == strings.ToUpper(c.GetCommand()) {
 			var mess string
 			for _, m := range *c.h {
 				mess = fmt.Sprintf("%s%s - %s \n", mess, m.GetCommand(), m.GetDescription())
