@@ -46,6 +46,7 @@ func main() {
 		go i.GetHashTagPhotos(c.InstagramHashtag)
 		d.RegisterHandlers(instagram.NewDisplayRandomInstagramPhotoHandler(c.CommandPrefix, cacheCl.(cache.PhotosCache)))
 	}
+	d.RegisterHandlers(discord.NewRandomUserHandler(c.CommandPrefix))
 	d.RegisterHandlers(discord.NewHelpHandler(c.CommandPrefix, d.GetHandlers()))
 	err = d.Run()
 	if err != nil {
