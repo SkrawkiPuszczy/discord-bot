@@ -36,7 +36,7 @@ func (c *helpHandler) RegisterDiscordHandler() interface{} {
 			ans := &discordgo.MessageEmbed{
 				Title:       "Dostępne funkcje",
 				Description: mess,
-				Footer:      &discordgo.MessageEmbedFooter{Text: "więcej klarity kierwa!!!"},
+				Footer:      &discordgo.MessageEmbedFooter{Text: "Wincyj klarity kierwa!!!"},
 			}
 			s.ChannelMessageSendEmbed(m.ChannelID, ans)
 		}
