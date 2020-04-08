@@ -13,13 +13,12 @@ type redisClient struct {
 
 //NewRedisClient create redis client based on url
 func NewRedisClient(url string) (Cache, error) {
-	client := redis.NewClient(
-		&redis.Options{
-			Addr:     url,
-			Password: "",
-			DB:       0,
-		})
-	_, err := client.Ping().Result()
+	options, err := redis.ParseURL(url)
+	if err != nil {
+		return nil, err
+	}
+	client := redis.NewClient(options)
+	_, err = client.Ping().Result()
 	if err != nil {
 		return nil, err
 	}
