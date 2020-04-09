@@ -10,6 +10,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/skrawkipuszczy/discord-bot/pkg/cache"
 	"github.com/skrawkipuszczy/discord-bot/pkg/config"
+	"github.com/skrawkipuszczy/discord-bot/pkg/db"
 	"github.com/skrawkipuszczy/discord-bot/pkg/discord"
 	"github.com/skrawkipuszczy/discord-bot/pkg/geolocation"
 	"github.com/skrawkipuszczy/discord-bot/pkg/http"
@@ -27,7 +28,7 @@ func main() {
 	}
 	var cacheCl cache.Cache
 	if c.CacheType == "redis" {
-		cacheCl, err = cache.NewRedisClient(c.RedisUrl)
+		cacheCl, err = cache.NewRedisClient(c.RedisURL)
 	} else {
 		cacheCl, err = cache.NewMemoryCache()
 	}
@@ -35,10 +36,15 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	defer cacheCl.Close()
+	dbCl, err := db.New(c.DatabaseURL)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer dbCl.Close()
 	d, err := discord.New(c.DiscordToken)
 	if c.N2yoEnabled {
 		geoLocationClient := geolocation.New(cacheCl)
-		mm := n2yo.New(geoLocationClient, c.N2yoApiKey)
+		mm := n2yo.New(geoLocationClient, c.N2yoAPIKey)
 		d.RegisterHandlers(n2yo.NewIssVisualPassHandler(c.CommandPrefix, mm))
 	}
 	defer d.Close()
@@ -55,11 +61,11 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	if c.ScheduledMessagesEnabled {
-		if c.ScheduledConfigFileUrl == "" {
+		if c.ScheduledConfigFileURL == "" {
 			log.Fatalln("Scheduler config is empty")
 		}
 		log.Println("scheduled messages feature enabled")
-		err := scheduler.New(c.ScheduledConfigFileUrl, d.SendMessage)
+		err := scheduler.New(c.ScheduledConfigFileURL, d.SendMessage)
 		if err != nil {
 			log.Println(err)
 		}

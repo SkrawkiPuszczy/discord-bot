@@ -8,10 +8,11 @@ type EnvConfig struct {
 	InstagramPassword        string `split_words:"true"`
 	InstagramHashtag         string `split_words:"true"`
 	N2yoEnabled              bool   `split_words:"true" default:"false"`
-	N2yoApiKey               string `split_words:"true"`
+	N2yoAPIKey               string `split_words:"true"`
 	ScheduledMessagesEnabled bool   `split_words:"true" default:"false"`
-	ScheduledConfigFileUrl   string `split_words:"true"`
+	ScheduledConfigFileURL   string `split_words:"true"`
 	CacheType                string `default:"memory" split_words:"true"`
-	RedisUrl                 string `split_words:"true"`
+	RedisURL                 string `split_words:"true"`
 	AdMessageInterval        int    `split_words:"true" default:"30"`
+	DatabaseURL              string `split_words:"true" required:"true"`
 }
