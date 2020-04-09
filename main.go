@@ -12,6 +12,7 @@ import (
 	"github.com/skrawkipuszczy/discord-bot/pkg/config"
 	"github.com/skrawkipuszczy/discord-bot/pkg/discord"
 	"github.com/skrawkipuszczy/discord-bot/pkg/geolocation"
+	"github.com/skrawkipuszczy/discord-bot/pkg/http"
 	"github.com/skrawkipuszczy/discord-bot/pkg/instagram"
 	"github.com/skrawkipuszczy/discord-bot/pkg/n2yo"
 	"github.com/skrawkipuszczy/discord-bot/pkg/scheduler"
@@ -48,6 +49,7 @@ func main() {
 	}
 	d.RegisterHandlers(discord.NewRandomUserHandler(c.CommandPrefix))
 	d.RegisterHandlers(discord.NewHelpHandler(c.CommandPrefix, d.GetHandlers()))
+	d.GetSession().AddHandler(discord.NewAdMessageHandler(c.AdMessageInterval).AdMessageHandler)
 	err = d.Run()
 	if err != nil {
 		log.Fatal(err.Error())
@@ -63,6 +65,9 @@ func main() {
 		}
 		<-gocron.Start()
 	}
+	svr := http.New()
+	go svr.Run()
+	defer svr.Close()
 	log.Println("Bot is now running.  Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)

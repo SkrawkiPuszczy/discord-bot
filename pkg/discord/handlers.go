@@ -77,10 +77,16 @@ func (c *randomUserHandler) RegisterDiscordHandler() interface{} {
 				return
 			}
 			cusers := len(users)
+
 			if cusers > 0 {
-				rand.Seed(time.Now().UnixNano())
-				user := users[rand.Intn(len(users))]
-				s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Wylosowano %s", user.User.Username))
+				var isBot bool = true
+				var user *discordgo.Member
+				for isBot == true {
+					rand.Seed(time.Now().UnixNano())
+					user = users[rand.Intn(cusers)]
+					isBot = user.User.Bot
+				}
+				s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Wylosowano %s", user.User.Mention()))
 			}
 
 		}

@@ -7,6 +7,7 @@ require (
 	github.com/aliforever/gista v0.0.0-20190928232311-405f05642441 // indirect
 	github.com/bwmarrin/discordgo v0.20.2
 	github.com/codingsince1985/geo-golang v1.6.1
+	github.com/gin-gonic/gin v1.6.2
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-redis/redis/v7 v7.2.0
 	github.com/go-resty/resty/v2 v2.2.0

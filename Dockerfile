@@ -12,5 +12,5 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o discord-b
 FROM scratch
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /app/discord-bot /discord-bot
-EXPOSE 8080
+EXPOSE 3000
 ENTRYPOINT ["/discord-bot"]
