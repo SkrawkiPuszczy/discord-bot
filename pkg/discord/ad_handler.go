@@ -1,23 +1,33 @@
 package discord
 
 import (
+	"log"
+
 	"github.com/bwmarrin/discordgo"
+	"github.com/go-redis/redis/v7"
+	"github.com/skrawkipuszczy/discord-bot/pkg/cache"
 )
 
 type adMessageHandler struct {
 	interval int
-	c        map[string]int
+	c        cache.MessagesOnChannelsCache
 }
 
-func NewAdMessageHandler(interval int) *adMessageHandler {
-	return &adMessageHandler{interval: interval, c: map[string]int{}}
+func NewAdMessageHandler(c cache.MessagesOnChannelsCache, interval int) *adMessageHandler {
+	return &adMessageHandler{interval: interval, c: c}
 }
 func (h *adMessageHandler) AdMessageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
-	if h.c[m.ChannelID] == h.interval {
-		h.c[m.ChannelID] = 0
+	count, err := h.c.GetChannelMessagesCounter(m.ChannelID)
+	if err == redis.Nil {
+		count = 0
+	} else if err != nil {
+		log.Println(err)
+		return
+	}
+	if count == h.interval {
 		mess := `
 		Zostań patronem Skrawki Puszczy i pomóż rozwijać kanał
 
@@ -31,9 +41,12 @@ func (h *adMessageHandler) AdMessageHandler(s *discordgo.Session, m *discordgo.M
 			Description: mess,
 			Footer:      &discordgo.MessageEmbedFooter{Text: "Wyincyj klarity kierwa!!!"},
 		}
+
+		h.c.SetChannelMessagesCounter(m.ChannelID, 0)
 		s.ChannelMessageSendEmbed(m.ChannelID, ans)
 
 	} else {
-		h.c[m.ChannelID] = h.c[m.ChannelID] + 1
+		count = count + 1
+		h.c.SetChannelMessagesCounter(m.ChannelID, count)
 	}
 }

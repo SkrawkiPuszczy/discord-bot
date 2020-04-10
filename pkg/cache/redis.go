@@ -3,6 +3,7 @@ package cache
 import (
 	"encoding/json"
 	"log"
+	"strconv"
 
 	"github.com/go-redis/redis/v7"
 )
@@ -72,4 +73,19 @@ func (r *redisClient) SetPhoto(keyName string, data string) error {
 }
 func (r *redisClient) GetPhotos() (map[string]string, error) {
 	return r.cl.HGetAll("photos").Result()
+}
+
+func (r *redisClient) SetChannelMessagesCounter(keyName string, data int) error {
+	return r.cl.HSet("messages_count", keyName, strconv.Itoa(data)).Err()
+
+}
+
+func (r *redisClient) GetChannelMessagesCounter(keyName string) (int, error) {
+	data, err := r.cl.HGet("messages_count", keyName).Result()
+	if err == redis.Nil {
+		data = "0"
+	} else if err != nil {
+		return 0, err
+	}
+	return strconv.Atoi(data)
 }

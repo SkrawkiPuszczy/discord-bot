@@ -3,6 +3,7 @@ package db
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 )
 
@@ -14,14 +15,9 @@ type Base struct {
 }
 
 func (base *Base) BeforeCreate(scope *gorm.Scope) error {
-	uuid, err := uuid.NewV4().String()
+	uuid, err := uuid.NewUUID()
 	if err != nil {
 		return err
 	}
-	return scope.SetColumn("ID", uuid)
-}
-
-type Adv struct {
-	gorm.Model
-	Name string
+	return scope.SetColumn("ID", uuid.String())
 }

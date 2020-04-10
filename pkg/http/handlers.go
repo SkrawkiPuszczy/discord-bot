@@ -6,6 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func homePageHandlder(c *gin.Context) {
+func homePageHandler(c *gin.Context) {
 	c.String(http.StatusOK, "Skrawki Puszczy discord bot")
 }

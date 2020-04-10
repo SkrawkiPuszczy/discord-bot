@@ -1,5 +1,7 @@
 package cache
 
+import "github.com/skrawkipuszczy/discord-bot/pkg/config"
+
 type KeyType string
 
 const (
@@ -19,7 +21,10 @@ type PhotosCache interface {
 	SetPhoto(keyName string, data string) error
 	GetPhotos() (map[string]string, error)
 }
-
+type MessagesOnChannelsCache interface {
+	SetChannelMessagesCounter(keyName string, data int) error
+	GetChannelMessagesCounter(keyName string) (int, error)
+}
 type CacheReader interface {
 	Get(s KeyType, keyName string) ([]byte, error)
 }
@@ -32,4 +37,12 @@ type location struct {
 	Name      string
 	Latitude  float64
 	Longitude float64
+}
+
+func New(config *config.EnvConfig) (Cache, error) {
+	if config.CacheType == "redis" {
+		return NewRedisClient(config.RedisURL)
+	} else {
+		return NewMemoryCache()
+	}
 }

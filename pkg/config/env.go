@@ -1,5 +1,9 @@
 package config
 
+import (
+	"github.com/kelseyhightower/envconfig"
+)
+
 type EnvConfig struct {
 	DiscordToken             string `required:"true" split_words:"true"`
 	CommandPrefix            string `required:"true" split_words:"true"`
@@ -15,4 +19,17 @@ type EnvConfig struct {
 	RedisURL                 string `split_words:"true"`
 	AdMessageInterval        int    `split_words:"true" default:"30"`
 	DatabaseURL              string `split_words:"true" required:"true"`
+	BurzeDzisAPIKey          string `split_words:"true"`
+	HTTPAdmin                string `split_words:"true" default:"admin"`
+	HTTPPassword             string `split_words:"true" default:"password"`
+	HTMLStaticDir            string `split_words:"true" default:"./web/"`
+}
+
+func New() (*EnvConfig, error) {
+	var c EnvConfig
+	err := envconfig.Process("bot", &c)
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
 }

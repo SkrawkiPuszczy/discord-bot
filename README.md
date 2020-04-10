@@ -15,4 +15,12 @@ BOT_CACHE_TYPE - memory or redis (default memory)
 BOT_REDIS_URL - required if BOT_CACHE_TPE=redis
 BOT_SCHEDULED_MESSAGES_ENABLED  - true or false to switch sending scheduled messages
 BOT_SCHEDULED_CONFIG_FILE_URL=config.yaml
+BOT_DATABASE_URL
+```
+
+## Deploy
+
+```shell
+heroku container:push --recursive
+heroku container:release web worker
 ```

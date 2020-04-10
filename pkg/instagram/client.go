@@ -20,7 +20,7 @@ func New(username, password string, cache cache.PhotosCache) *instagramClient {
 	return &instagramClient{cl: insta, cache: cache}
 }
 
-func (i *instagramClient) GetHashTagPhotos(name string) error {
+func GetHashTagPhotos(i *instagramClient, name string) error {
 	for {
 		if err := i.cl.Login(); err != nil {
 			log.Println(err)

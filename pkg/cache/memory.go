@@ -2,17 +2,20 @@ package cache
 
 import (
 	"encoding/json"
+	"strconv"
 )
 
 type memoryCache struct {
-	locations map[string][]byte
-	photos    map[string]string
+	locations               map[string][]byte
+	photos                  map[string]string
+	messagesOnChannelsCount map[string]string
 }
 
 func NewMemoryCache() (*memoryCache, error) {
 	return &memoryCache{
-		locations: map[string][]byte{},
-		photos:    map[string]string{},
+		locations:               map[string][]byte{},
+		photos:                  map[string]string{},
+		messagesOnChannelsCount: map[string]string{},
 	}, nil
 }
 func (c *memoryCache) Close() {
@@ -50,4 +53,16 @@ func (r *memoryCache) SetPhoto(keyName string, data string) error {
 }
 func (r *memoryCache) GetPhotos() (map[string]string, error) {
 	return r.photos, nil
+}
+
+func (r *memoryCache) SetChannelMessagesCounter(keyName string, data int) error {
+	r.messagesOnChannelsCount[keyName] = strconv.Itoa(data)
+	return nil
+}
+
+func (r *memoryCache) GetChannelMessagesCounter(keyName string) (int, error) {
+	if val, ok := r.messagesOnChannelsCount[keyName]; ok {
+		return strconv.Atoi(val)
+	}
+	return 0, nil
 }
