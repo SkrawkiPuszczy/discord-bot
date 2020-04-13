@@ -13,6 +13,7 @@ import (
 	"github.com/skrawkipuszczy/discord-bot/pkg/discord"
 	"github.com/skrawkipuszczy/discord-bot/pkg/geolocation"
 	"github.com/skrawkipuszczy/discord-bot/pkg/instagram"
+	"github.com/skrawkipuszczy/discord-bot/pkg/meteo"
 	"github.com/skrawkipuszczy/discord-bot/pkg/n2yo"
 	"github.com/skrawkipuszczy/discord-bot/pkg/scheduler"
 )
@@ -35,16 +36,16 @@ func main() {
 	defer dbCl.Close()
 
 	d, err := discord.New(cfg.DiscordToken)
+	geoLocationClient := geolocation.New(cacheCl)
 	if cfg.N2yoEnabled {
-		geoLocationClient := geolocation.New(cacheCl)
 		mm := n2yo.New(geoLocationClient, cfg.N2yoAPIKey)
 		d.RegisterHandlers(n2yo.NewIssVisualPassHandler(cfg.CommandPrefix, mm))
 	}
 	defer d.Close()
-	// if cfg.BurzeDzisAPIKey != "" {
-	// 	dd := meteo.New(cfg.BurzeDzisAPIKey)
-	// 	d.GetSession().AddHandler(meteo.Handler(dd))
-	// }
+	if cfg.BurzeDzisAPIKey != "" {
+		meteoCl := meteo.New(cfg.BurzeDzisAPIKey, *dbCl.Db, cacheCl.(cache.WetherCitiesCache), cfg.CommandPrefix)
+		d.RegisterProvidedHandlers(meteoCl)
+	}
 	if cfg.InstagramEnabled {
 		i := instagram.New(cfg.InstagramUsername, cfg.InstagramPassword, cacheCl.(cache.PhotosCache))
 		go instagram.GetHashTagPhotos(i, cfg.InstagramHashtag)

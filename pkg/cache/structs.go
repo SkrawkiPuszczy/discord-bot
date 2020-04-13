@@ -7,6 +7,7 @@ type KeyType string
 const (
 	Location KeyType = "locations"
 	Photo    KeyType = "photos"
+	Weather  KeyType = "weather"
 )
 
 type Cache interface {
@@ -24,6 +25,10 @@ type PhotosCache interface {
 type MessagesOnChannelsCache interface {
 	SetChannelMessagesCounter(keyName string, data int) error
 	GetChannelMessagesCounter(keyName string) (int, error)
+}
+type WetherCitiesCache interface {
+	SetWetherCityLocation(keyName string, x, y float64) error
+	GetWetherCityLocation(keyName string) (float64, float64, error)
 }
 type CacheReader interface {
 	Get(s KeyType, keyName string) ([]byte, error)

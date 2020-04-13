@@ -89,3 +89,32 @@ func (r *redisClient) GetChannelMessagesCounter(keyName string) (int, error) {
 	}
 	return strconv.Atoi(data)
 }
+func (r *redisClient) SetWetherCityLocation(name string, x, y float64) error {
+	data := &location{Name: name, Latitude: x, Longitude: y}
+	json, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	err = r.cl.Set(prepareKey(Weather, name), json, 0).Err()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *redisClient) GetWetherCityLocation(name string) (float64, float64, error) {
+	str, err := r.cl.Get(prepareKey(Weather, name)).Result()
+	loc := &location{}
+	if err == redis.Nil {
+		return 1000, 1000, nil
+	} else if err != nil {
+		return 1000, 1000, err
+	} else {
+		err = json.Unmarshal([]byte(str), &loc)
+		if err != nil {
+			return 1000, 1000, err
+		}
+		return loc.Latitude, loc.Longitude, nil
+	}
+
+}

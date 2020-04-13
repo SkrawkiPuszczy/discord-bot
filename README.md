@@ -16,6 +16,7 @@ BOT_REDIS_URL - required if BOT_CACHE_TPE=redis
 BOT_SCHEDULED_MESSAGES_ENABLED  - true or false to switch sending scheduled messages
 BOT_SCHEDULED_CONFIG_FILE_URL=config.yaml
 BOT_DATABASE_URL
+BOT_BURZE_DZIS_API_KEY
 ```
 
 ## Deploy

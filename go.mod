@@ -13,9 +13,11 @@ require (
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-redis/redis/v7 v7.2.0
 	github.com/go-resty/resty/v2 v2.2.0
+	github.com/gogo/protobuf v1.2.1
 	github.com/google/uuid v1.1.1
 	github.com/jasonlvhit/gocron v0.0.0-20200323211822-1a413f9a41a2
 	github.com/jinzhu/gorm v1.9.12
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/pkg/errors v0.8.0
 	github.com/spf13/cobra v0.0.7 // indirect
 )

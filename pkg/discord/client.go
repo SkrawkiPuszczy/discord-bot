@@ -19,9 +19,23 @@ type DiscordHandler interface {
 	GetDescription() string
 }
 
+type NamedHandler struct {
+	Command     string
+	Description string
+	Method      interface{}
+}
+type DiscordHandlerProvider interface {
+	RegisterDiscordHandlers() []NamedHandler
+	// AddDiscordHandlers() []struct {
+	// 	command     string
+	// 	description string
+	// 	funC        interface{}
+	// }
+}
 type discordClient struct {
 	s        *discordgo.Session
 	handlers []DiscordHandler
+	h        []DiscordHandlerProvider
 }
 
 func New(token string, handlers ...DiscordHandler) (*discordClient, error) {
@@ -30,7 +44,7 @@ func New(token string, handlers ...DiscordHandler) (*discordClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	cl := &discordClient{s: dg}
+	cl := &discordClient{s: dg, h: []DiscordHandlerProvider{}}
 	for _, c := range handlers {
 		cl.handlers = append(cl.handlers, c)
 	}
@@ -41,6 +55,13 @@ func (d *discordClient) Run() error {
 	for _, c := range d.handlers {
 		log.Printf("register discord handler:  %s - %s", c.GetCommand(), c.GetDescription())
 		d.s.AddHandler(c.RegisterDiscordHandler())
+	}
+	for _, c := range d.h {
+		for _, w := range c.RegisterDiscordHandlers() {
+			log.Printf("register discord handler:  %s - %s", w.Command, w.Description)
+			d.s.AddHandler(w.Method)
+		}
+
 	}
 	return d.s.Open()
 }
@@ -53,6 +74,11 @@ func (d *discordClient) Close() error {
 func (d *discordClient) RegisterHandlers(handlers ...DiscordHandler) {
 	for _, c := range handlers {
 		d.handlers = append(d.handlers, c)
+	}
+}
+func (d *discordClient) RegisterProvidedHandlers(handlers ...DiscordHandlerProvider) {
+	for _, c := range handlers {
+		d.h = append(d.h, c)
 	}
 }
 func (d *discordClient) GetHandlers() *[]DiscordHandler {
